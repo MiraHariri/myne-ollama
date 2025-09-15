@@ -5,12 +5,14 @@ FROM ollama/ollama:latest
 ENV OLLAMA_HOST=0.0.0.0
 ENV OLLAMA_ORIGINS=*
 
-# Create a startup script
+# Copy and normalize line endings
 COPY start-ollama.sh /usr/local/bin/start-ollama.sh
-RUN chmod +x /usr/local/bin/start-ollama.sh
+RUN apt-get update && apt-get install -y dos2unix && \
+    dos2unix /usr/local/bin/start-ollama.sh && \
+    chmod +x /usr/local/bin/start-ollama.sh
 
 # Expose the default Ollama port
 EXPOSE 11434
 
-# Use the startup script as entrypoint
-ENTRYPOINT ["/usr/local/bin/start-ollama.sh"]
+# Use bash to run the startup script
+ENTRYPOINT ["/bin/bash", "/usr/local/bin/start-ollama.sh"]
